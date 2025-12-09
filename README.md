@@ -50,6 +50,7 @@ Diseño e implementación de filtros analógicos.
 ├── 📁 TP2_AO_Reales/          # Análisis de offset y limitaciones de frecuencia
 ├── 📁 TP3_VFA_CFA/            # Comparativa, estabilidad y compensación
 ├── 📁 TP4_Filtros/            # Síntesis y diseño de filtros activos
+├── 📁 TPS_Extra/              # Trabajos Extra
 ├── 📄 Informes/               # Documentos PDF finales compilados en LaTeX
 └── 📄 README.md               # Descripción del proyecto
 ```
