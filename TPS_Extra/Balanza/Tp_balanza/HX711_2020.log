@@ -1,0 +1,14 @@
+0	1	mikroCPIC1618.exe -MSF -DBG -pP16F877A -GC -DL -O11111114 -fo4 -N"C:\Users\Alcides Ramos\Desktop\HX711 2020\HX711_2020.mcppi" -SP"C:\Users\Public\Documents\Mikroelektronika\mikroC PRO for PIC\Defs\" -SP"C:\Users\Public\Documents\Mikroelektronika\mikroC PRO for PIC\Uses\P16\" -SP"C:\Users\Alcides Ramos\Desktop\HX711 2020\" -IP"C:\Users\Public\Documents\Mikroelektronika\mikroC PRO for PIC\Uses\P16\" "HX711_2020.c" "HX711.c" "__Lib_Math.mcl" "__Lib_MathDouble.mcl" "__Lib_System.mcl" "__Lib_Delays.mcl" "__Lib_LcdConsts.mcl" "__Lib_Lcd.mcl"	 
+hint: 0	1139	Available RAM: 352 [bytes], Available ROM: 8192 [bytes]	 
+diagnostics: 0	122	Compilation Started	hx711.h
+diagnostics: 152	123	Compiled Successfully	HX711_2020.c
+diagnostics: 0	122	Compilation Started	hx711.h
+diagnostics: 89	123	Compiled Successfully	HX711.c
+diagnostics: 0	127	All files Compiled in 125 ms	 
+hint: 0	1144	Used RAM (bytes): 111 (32%)  Free RAM (bytes): 241 (68%)	Used RAM (bytes): 111 (32%)  Free RAM (bytes): 241 (68%)
+hint: 0	1144	Used ROM (program words): 2917 (36%)  Free ROM (program words): 5275 (64%)	Used ROM (program words): 2917 (36%)  Free ROM (program words): 5275 (64%)
+diagnostics: 0	125	Project Linked Successfully	HX711_2020.mcppi
+hint: 0	1004	COFF file successfully generated	COFF file successfully generated
+diagnostics: 0	128	Linked in 188 ms	 
+diagnostics: 0	129	Project 'HX711_2020.mcppi' completed: 328 ms	 
+diagnostics: 0	103	Finished successfully: 27 dic. 2020, 02:10:30	HX711_2020.mcppi
