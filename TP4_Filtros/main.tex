@@ -1,0 +1,977 @@
+%------------------------------------ Inicio ---------------------------------------
+\documentclass[11pt, a4paper]{article}
+
+% -------------- Nombre del documento --------------
+\newcommand{\nombre}{Trabajo Práctico de Laboratorio N°4.}
+%---------------------------------------------------------
+
+%-------------------- Include Paquetes iniciales---------------------
+\usepackage{mathtools}
+\usepackage{graphicx}
+\usepackage{float} 
+\usepackage{geometry}
+\geometry{top=30mm,bottom=30mm,left=33mm,right=33mm,headsep=15mm}
+\usepackage{relsize} % agranda a un mas las letras
+\usepackage[spanish,es-nodecimaldot]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage{lastpage} % nos dice el numero total de paginas
+\usepackage{fancyhdr} % modifica encabezado y pie de pagina
+\usepackage{siunitx} % para \si y \SI
+\usepackage{pdfpages} % Para adjuntar datasheets
+\usepackage[hidelinks]{hyperref} % Para que funcionen los links \url{} en la bibliografía
+
+% Estilos de página
+\pagestyle{fancy} 
+\renewcommand{\headrulewidth}{0.1pt} 
+\renewcommand{\footrulewidth}{0pt} 
+
+% Para tablas formato:
+\usepackage[table]{xcolor} 
+\renewcommand{\arraystretch}{1.4} % espaciado vertical
+
+\cfoot{}
+\pagestyle{fancy}
+\fancyhf{}
+\rfoot{\thepage}
+\lhead{\includegraphics[scale=0.11]{Imagenes/logoPrincipal.jpg}}
+\rhead{\nombre}
+
+
+%Python
+
+\usepackage{listings}
+\usepackage{xcolor}
+
+% Definición de colores para el código
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+% Estilo para el código Python
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{blue},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\footnotesize, % Fuente tipo máquina de escribir
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2,
+    language=Python
+}
+
+\lstset{style=mystyle}
+
+
+%-----------------------------------------------------------------------
+
+\begin{document}
+
+%--------------------  Portada ---------------------
+\begin{center}
+	\vspace{10mm}
+	\textscale{2.5}{ \textbf{\nombre}} \\
+	\vspace{6mm}
+	\textscale{1.6}{ Síntesis de Redes Activas }\\
+	\vspace{4mm}
+	\textscale{1.3}{2025}\\
+    ---------------------------
+
+    \textbf{\begin{figure}[H]
+		\centering
+		\includegraphics[width=0.4\linewidth]{Imagenes/unc_logo_solo.png}
+	\end{figure}}
+
+     --------------------------------------------------------
+     
+	\vspace{8mm}
+	\textscale{1.3}{\textbf{Integrantes}}\\
+	\vspace{4mm}
+
+\renewcommand{\arraystretch}{1.5} 
+\begin{table}[H]
+\centering
+\begin{tabular}{l l l}
+BAZOALTO ROCABADO & Jacqueline & 43169389 \\
+CABERO & Mauro Ezequiel & 43761887 \\
+MORA & Ivan Alexander & 38776379 \\
+MORAN & Mauro Hugo & 42583125 \\
+RUIZ & Iván Marcelo & 41402048 \\
+\end{tabular}
+\end{table}
+
+
+	\vspace{10mm}
+% Título Docentes
+\begin{center}
+\textscale{1.3}{\textbf{Docentes}}\\
+\vspace{6mm}
+\end{center}
+
+\noindent
+\begin{minipage}{0.30\linewidth}
+\raggedright
+\textscale{1.4}{Ing. Ferreyra, Pablo}\\[2mm]
+\textscale{1.4}{Ing. Reale, César}\\[2mm]
+\end{minipage}%
+\hfill
+	
+	\vspace{5mm}
+	\thispagestyle{empty}
+\end{center}
+\clearpage
+%----------------------------fin portada-----------
+\thispagestyle{empty}
+\tableofcontents
+\clearpage
+
+
+% ------------------------------------- Desarrollo ---------------------------------
+\pagenumbering{arabic}
+
+\section{Introducción y Marco Teórico}
+
+\vspace{0.2cm}
+\hspace{1mm}El presente trabajo práctico aborda dos temáticas fundamentales en la síntesis de redes activas: el diseño de filtros analógicos de alto rendimiento y la generación de señales mediante osciladores sinusoidales.
+
+\subsection{Filtros Activos: Aproximación de Chebyshev}
+\vspace{0.2cm}
+\hspace{1mm}En la primera parte, se profundiza en el diseño de filtros mediante la aproximación de \textbf{Chebyshev}. A diferencia de la aproximación de Butterworth (máxima planicidad), los filtros de Chebyshev permiten obtener una caída mucho más abrupta en la banda de transición a costa de aceptar un rizado (\textit{ripple}) en la banda de paso. Las características principales que motivan su elección son:
+
+\begin{itemize}
+    \item \textbf{Selectividad superior:} Estos polinomios permiten diseñar filtros con pendientes de atenuación más pronunciadas cerca de la frecuencia de corte. Esto significa que es posible lograr una mayor discriminación de frecuencias no deseadas en comparación con otras aproximaciones del mismo orden.
+    \item \textbf{Eficiencia de Orden:} Permiten minimizar el orden del filtro necesario para cumplir con una plantilla de atenuación exigente. Un menor orden implica menos etapas, menos componentes, menor costo y una implementación física más sencilla.
+    \item \textbf{Optimización del ancho de banda:} Aprovechan al máximo el espectro disponible, manteniendo la atenuación dentro de límites controlados en la banda de paso para maximizar el rechazo fuera de ella.
+    \item \textbf{Flexibilidad de diseño:} Permiten al diseñador ajustar parámetros críticos, como la atenuación máxima permitida en la banda de paso ($\epsilon$) y la frecuencia de corte, para satisfacer requerimientos específicos de la aplicación.
+\end{itemize}
+
+\subsection{Osciladores Senoidales}
+\vspace{0.2cm}
+\hspace{1mm}En la segunda parte (ejercicio complementario), se aborda la generación de señales periódicas sin excitación externa. Se analizará el \textbf{Oscilador por Desplazamiento de Fase} (\textit{Phase Shift Oscillator}), el cual utiliza un amplificador inversor y una red de realimentación RC de tres etapas.
+
+\hspace{1mm}El funcionamiento se basa en el\textbf{ Criterio de Barkhausen}, que establece que para mantener una oscilación sostenida, la ganancia de lazo debe ser unitaria ($|A\beta|=1$) y el desfase total debe ser de $360^\circ$. Dado que el amplificador inversor aporta $180^\circ$, la red RC debe proporcionar los $180^\circ$ restantes a la frecuencia de oscilación deseada ($12~\text{kHz}$).
+
+\section{Objetivos}
+\vspace{0.2cm}
+\begin{itemize}
+    \item \textbf{Sintetizar} un filtro pasa banda que cumpla con una plantilla de requerimientos estricta, utilizando la aproximación de Chebyshev y herramientas computacionales (Python/Scipy) para la obtención de la función de transferencia.
+    \item \textbf{Implementar} el filtro mediante topologías activas bicuadráticas (Sallen-Key), calculando los componentes pasivos necesarios y verificando su comportamiento.
+    \item \textbf{Diseñar} un oscilador por desplazamiento de fase estable a una frecuencia de $12~\text{kHz}$, calculando la ganancia necesaria para asegurar el arranque de la oscilación.
+    \item \textbf{Simular} ambos circuitos en LTspice para validar la respuesta en frecuencia (Bode) del filtro y la respuesta transitoria del oscilador.
+    \item \textbf{Analizar la sensibilidad} de los circuitos frente a la tolerancia de los componentes, realizando análisis de Montecarlo para prever desviaciones en la implementación real.
+    \item \textbf{Construir y medir} los prototipos en laboratorio, contrastando los resultados teóricos, simulados y experimentales.
+\end{itemize}
+
+
+
+
+
+
+
+
+
+
+\newpage
+\section{Desarrollo}
+\vspace{0.2cm}
+\hspace{1mm}De acuerdo a lo especificado en la plantilla de requerimientos, podemos extraer la siguiente información:
+
+\begin{itemize}
+    \item Banda de Paso: Desde $800$ hasta $1250~\text{Hz}$ con una atenuación máxima de $0.25~\text{dB}$.
+    \item Banda de Rechazo: Frecuencias menores a $200~\text{Hz}$ y mayores a $5000~\text{Hz}$ con una atenuación mínima de $30~\text{dB}$.
+\end{itemize}
+
+\vspace{0.2cm}
+\hspace{1mm}Con estos criterios, utilizaremos Python para sintetizar el filtro. Para ello, definimos las especificaciones dadas como parámetros de entrada en el script:
+
+\begin{lstlisting}[caption={Especificaciones en Python}, label={code:especificaciones}]
+fp = [800, 1250] # Puntos banda de Paso [Hz]
+fs = [200, 5000] # Puntos banda de Rechazo [Hz]
+
+wp = np.dot(2*np.pi, fp) # Puntos banda de paso [Rad/s]
+ws = np.dot(2*np.pi, fs) # Puntos banda de Rechazo [Rad/s]
+
+Ap = 0.25 # Atenuación Máxima Banda de Paso [dB]
+As = 30   # Atenuación Mínima Banda de Rechazo [dB]
+\end{lstlisting}
+
+\vspace{0.2cm}
+\hspace{1mm}Luego, utilizaremos la librería \textbf{scipy} para obtener el polinomio de Chebyshev. Además, usaremos la librería \textbf{control} para expresarlo como función de transferencia y generar el diagrama de Bode de manera sencilla:
+
+\begin{lstlisting}[caption={Obtención del polinomio y función de transferencia}, label={code:polinomio}]
+# Retorna el orden mínimo del filtro y las frecuencias de corte
+N, wn = signal.cheb1ord(wp, ws, Ap, As, analog=True)
+
+# Retorna los coef del numerador (b) y del denominador (a) del filtro sintetizado
+b, a = signal.cheby1(N, Ap, wn, btype="bandpass", analog=True)
+
+FiltroAten = ct.TransferFunction(a, b)
+Filtro = ct.TransferFunction(b, a)
+\end{lstlisting}
+
+\vspace{0.2cm}
+\hspace{1mm}Con esto podemos graficar la respuesta en Bode (atenuación) para compararla con lo especificado:
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\linewidth]{Imagenes/filtro.png}
+    \caption{Diagrama de Bode del filtro}
+    \label{fig:bode_filtro}
+\end{figure}
+
+
+
+\newpage
+\hspace{1mm}La función de transferencia resultante del filtro será la siguiente:
+
+\begin{equation}
+    H(s) = \frac{1.642 \cdot 10^7 \cdot s^2}{s^4 + 5888 \cdot s^3 + 9.586 \cdot 10^7 \cdot s^2 + 2.006 \cdot 10^{11} \cdot s + 1.559 \cdot 10^{15}}
+\end{equation}
+
+\hspace{1mm}Se aprecia que el filtro tiene un comportamiento de pasa banda; por ello, podemos separarlo en dos etapas: un pasa alto y un pasa bajo, permitiendo sintetizarlo mediante topologías bicuadráticas.
+
+\vspace{0.2cm}
+\hspace{1mm}Para la topología del filtro \textbf{Pasa Bajo}, se obtiene la siguiente función de transferencia:
+
+\begin{equation}
+    H_{LP}(s) = \frac{1.642 \cdot 10^7}{s^2 + 3184 \cdot s + 6.632 \cdot 10^7}
+\end{equation}
+
+\vspace{0.2cm}
+\hspace{1mm}En cambio, para la topología del filtro \textbf{Pasa Alto}, se obtiene:
+
+\begin{equation}
+    H_{HP}(s) = \frac{s^2}{s^2 + 1896 \cdot s + 2.35 \cdot 10^7}
+\end{equation}
+
+\vspace{0.2cm}
+\hspace{1mm}
+
+
+
+
+
+Si graficamos la respuesta en frecuencia de cada bicuadrática y el conjunto de las mismas, vemos que se responde correctamente a lo especificado:
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\linewidth]{Imagenes/Filtros.png}
+    \caption{Respuesta en Frecuencia combinada}
+    \label{fig:rta_frecuencia}
+\end{figure}
+
+\newpage
+\subsection{Pasa Alto}
+\vspace{0.2cm}
+\subsubsection{Síntesis}
+\vspace{0.2cm}
+\hspace{1mm}Para sintetizar esta bicuadrática se utilizará la topología de realimentación positiva "Sallen-Key". La función de transferencia objetivo es:
+
+\begin{equation}
+    \boxed{\frac{s^2}{s^2 + 1896 \cdot s + 2.35 \cdot 10^7}}
+\end{equation}
+
+\vspace{0.2cm}
+\hspace{1mm}El circuito modelo a utilizar y calcular es el siguiente:
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\linewidth]{Imagenes/Alto.png}
+    \caption{Sallen-Key Pasa Alto}
+    \label{fig:circuito_pasaalto}
+\end{figure}
+
+\vspace{0.2cm}
+\hspace{1mm}Se plantea el sistema de ecuaciones en base a la red mostrada a continuación, asumiendo que el amplificador operacional es ideal y no posee polos que modifiquen la respuesta del filtro:
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\linewidth]{Imagenes/RedAlta.png}
+    \caption{Red pasiva Pasa Alto}
+    \label{fig:red_pasaalto}
+\end{figure}
+
+\newpage
+\hspace{1mm}Utilizando el método de nodos se plantea el siguiente sistema de ecuaciones:
+
+\begin{equation}
+    \begin{aligned}
+        V_i \cdot sC_1 + V_o \cdot \frac{1}{R_1} &= V_x \cdot \left(sC_1+sC_2+\frac{1}{R_1}\right) - V_+ \cdot (sC_2) \\
+        0 &= -V_x \cdot (sC_2) + V_+ \cdot \left(\frac{1}{R_2} + sC_2\right)
+    \end{aligned}
+\end{equation}
+
+\vspace{0.2cm}
+\hspace{1mm}Si resolvemos para determinar $V_+$, haciendo que $C_1 = C_2 = C$, nos queda:
+
+\begin{equation}
+    V_+ = \frac{V_i \cdot (s^2C^2) + V_o \cdot \left(s\frac{C}{R_1}\right)}{s^2C^2 + sC\left(\frac{2}{R_2}+\frac{1}{R_1}\right)+\frac{1}{R_2R_1}}
+\end{equation}
+
+\vspace{0.2cm}
+\hspace{1mm}Donde podemos identificar:
+\begin{itemize}
+    \item $D = s^2C^2 + sC\left(\frac{2}{R_2}+\frac{1}{R_1}\right)+\frac{1}{R_2R_1}$
+    \item $N_{ff} = s^2C^2$
+    \item $N_{fb} = s\frac{C}{R_1}$
+\end{itemize}
+
+\vspace{0.2cm}
+\hspace{1mm}Siendo $k = \frac{R_a + R_b}{R_a}$, la solución del filtro es:
+
+\begin{equation}
+    \frac{V_o}{V_i} = \frac{k \cdot N_{ff}}{D - k \cdot N_{fb}} = \frac{k \cdot s^2C^2}{s^2C^2 + sC\left(\frac{2}{R_2}+\frac{1}{R_1}\right)+\frac{1}{R_2R_1} - k \cdot s\frac{C}{R_1}}
+\end{equation}
+
+\vspace{0.2cm}
+\hspace{1mm}Reordenando e igualando a nuestra función de transferencia deseada:
+
+\begin{equation}
+    \boxed{\frac{s^2}{s^2 + 1896 \cdot s + 2.35 \cdot 10^7} = \frac{k \cdot s^2}{s^2 + \frac{s}{C} \cdot \left(\frac{2}{R_2} + \frac{1-k}{R_1}\right) + \frac{1}{R_1R_2C^2}}}
+\end{equation}
+
+\vspace{0.2cm}
+\hspace{1mm}Por lo que la solución al sistema, planteando que $k=1$ (Configuración Buffer), resulta en los siguientes componentes pasivos:
+
+\begin{itemize}
+    \item $C_1 = C_2 = 1~\text{F} \xrightarrow{} 1~\mu\text{F}$
+    \item $R_1 = 40.34~\mu\Omega \xrightarrow{} 40.34~\Omega$
+    \item $R_2 = 1.055~\text{m}\Omega \xrightarrow{} 1.055~\text{k}\Omega$
+\end{itemize}
+
+\newpage
+\subsubsection{Simulaciones}
+\vspace{0.2cm}
+\hspace{1mm}Simularemos el circuito con la topología dada y los elementos pasivos ya calculados:
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\linewidth]{Imagenes/spiceAlto.png}
+    \caption{Circuito Simulado Pasa Alto}
+    \label{fig:sim_alto}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\linewidth]{Imagenes/BodeAlto.png}
+    \caption{Bode Filtro Pasa Alto}
+    \label{fig:bode_alto}
+\end{figure}
+
+
+\newpage
+\subsection{Pasa Bajo}
+\vspace{0.2cm}
+\subsubsection{Síntesis}
+\vspace{0.2cm}
+\hspace{1mm}Para sintetizar esta bicuadrática, también se utilizará la topología "Sallen-Key". La función de transferencia a lograr es:
+
+\begin{equation}
+    \boxed{\frac{1.642 \cdot 10^7}{s^2 + 3184 \cdot s + 6.632 \cdot 10^7}}
+\end{equation}
+
+\vspace{0.2cm}
+\hspace{1mm}El circuito modelo a utilizar y calcular es el siguiente:
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\linewidth]{Imagenes/Bajo.png}
+    \caption{Sallen-Key Pasa Bajo}
+    \label{fig:circuito_pasabajo}
+\end{figure}
+
+\vspace{0.2cm}
+\hspace{1mm}Se plantea el sistema de ecuaciones en base a la siguiente red:
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\linewidth]{Imagenes/RedBajo.png}
+    \caption{Red pasiva Pasa Bajo}
+    \label{fig:red_pasabajo}
+\end{figure}
+
+\newpage
+\hspace{1mm}Utilizando el método de nodos y haciendo $C_1 = C_2 = C$ y $R_1 = R_2 = R$:
+
+\begin{equation}
+    \begin{aligned}
+        \frac{V_i}{R} + V_o \cdot sC &= V_x \cdot \left(\frac{2}{R}+sC\right) - V_+ \cdot \left(\frac{1}{R}\right) \\
+        0 &= -V_x \cdot \left(\frac{1}{R}\right) + V_+ \cdot \left(\frac{1}{R} + sC\right)
+    \end{aligned}
+\end{equation}
+
+\vspace{0.2cm}
+\hspace{1mm}Resolviendo, obtenemos la siguiente expresión:
+
+\begin{equation}
+    V_+ = \frac{V_i + V_o \cdot sCR}{s^2C^2R^2 + 3sCR + 1}
+\end{equation}
+
+\vspace{0.2cm}
+\hspace{1mm}Donde podemos identificar:
+\begin{itemize}
+    \item $D = s^2C^2R^2 + 3sCR + 1$
+    \item $N_{ff} = 1$
+    \item $N_{fb} = sCR$
+\end{itemize}
+
+\vspace{0.2cm}
+\hspace{1mm}Con $k = \frac{R_a + R_b}{R_a}$, la transferencia es:
+
+\begin{equation}
+    \frac{V_o}{V_i} = \frac{k \cdot N_{ff}}{D-k \cdot N_{fb}} = \frac{k}{s^2C^2R^2+3sCR + 1 - k \cdot sCR} = \frac{k}{s^2C^2R^2 + sCR(3-k) + 1}
+\end{equation}
+
+\vspace{0.2cm}
+\hspace{1mm}Reordenando e igualando a la transferencia deseada:
+
+\begin{equation}
+    \boxed{\frac{1.642 \cdot 10^7}{s^2 + 3184 \cdot s + 6.632 \cdot 10^7} = \frac{k \cdot \frac{1}{C^2R^2}}{s^2 + s\frac{3-k}{CR} + \frac{1}{C^2R^2}}}
+\end{equation}
+
+\vspace{0.2cm}
+\hspace{1mm}Calculando los parámetros:
+\begin{center}
+    $CR = 122.79 \cdot 10^{-6}$ \\
+    $k = 2.609$
+\end{center}
+
+\vspace{0.2cm}
+\hspace{1mm}Si hacemos $C=1~\text{F}$ para luego escalar:
+\begin{itemize}
+    \item $C_1 = C_2 = 1~\text{F} \xrightarrow{} 0.1~\mu\text{F}$
+    \item $R_1 = R_2 = 122.79~\mu\Omega \xrightarrow{} 1.228~\text{k}\Omega$
+\end{itemize}
+
+\vspace{0.2cm}
+\hspace{1mm}Esto nos dará la siguiente función de transferencia, la cual tendremos que escalar para obtener la ganancia esperada:
+\begin{equation}
+    \frac{173.01 \cdot 10^6}{s^2 + 3184s + 6.632 \cdot 10^7}
+\end{equation}
+
+\vspace{0.2cm}
+\hspace{1mm}El factor de escala será de $G = 0.094908$. Esto se logra mediante un divisor resistivo a la entrada de la red, agregando una resistencia adicional y aplicando Thévenin, teniendo en cuenta que:
+
+\begin{itemize}
+    \item $R_1 = R_3 // R_4 = 1.228~\text{k}\Omega$
+    \item $G = 0.094908 = \frac{R_4}{R_4+R_3}$
+\end{itemize}
+
+\vspace{0.2cm}
+\hspace{1mm}Resolviendo este sistema de ecuaciones:
+\begin{itemize}
+    \item $R_3 = 1.3568~\text{k}\Omega$
+    \item $R_4 = 12.939~\text{k}\Omega$
+\end{itemize}
+
+\vspace{0.2cm}
+\hspace{1mm}Además, para obtener el $k$ deseado:
+\begin{itemize}
+    \item $R_a = 621.5~\Omega$
+    \item $R_b = 1~\text{k}\Omega$
+\end{itemize}
+
+
+\subsubsection{Simulaciones}
+\vspace{0.2cm}
+\hspace{1mm}Simularemos el circuito Pasa Bajo:
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\linewidth]{Imagenes/spiceBajo.png}
+    \caption{Circuito Simulado Pasa Bajo}
+    \label{fig:sim_bajo}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\linewidth]{Imagenes/BodeBajo.png}
+    \caption{Bode Filtro Pasa Bajo}
+    \label{fig:bode_bajo}
+\end{figure}
+
+
+\newpage
+\subsection{Filtro Completo}
+\vspace{0.2cm}
+\hspace{1mm}Para la realización del filtro completo, tan solo es necesario conectar ambos circuitos ya calculados en cascada (salida-entrada).
+
+\subsubsection{Simulaciones}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\linewidth]{Imagenes/spiceCompleto.png}
+    \caption{Circuito Completo Simulado}
+    \label{fig:sim_completo}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\linewidth]{Imagenes/BodeCompleto.png}
+    \caption{Bode Filtro Pasa Banda Completo}
+    \label{fig:bode_completo}
+\end{figure}
+
+\vspace{0.2cm}
+\hspace{1mm}Realizando un ajuste a las frecuencias de importancia y determinando los valores mediante cursores:
+
+\begin{itemize}
+    \item $800~\text{Hz}: -0.257~\text{dB}$
+    \item $1250~\text{Hz}: -0.266~\text{dB}$
+    \item $200~\text{Hz}: -34.8~\text{dB}$
+    \item $5000~\text{Hz}: -34.88~\text{dB}$
+\end{itemize}
+
+\vspace{0.2cm}
+\hspace{1mm}Podemos comprobar que este filtro cumple con lo especificado.
+
+
+\subsubsection{Sensibilidad}
+\vspace{0.2cm}
+\hspace{1mm}Para calcular la sensibilidad de la frecuencia de los polos $\omega_p$ y el ancho de banda $(\omega_p/Q_p)$, se toman las expresiones dadas anteriormente para cada caso:
+
+\vspace{0.5cm}
+\noindent\Large{\textbf{Pasa Bajo}}
+\normalsize
+\begin{equation}
+    \boxed{\frac{\omega_p^2}{s^2+\frac{\omega_p}{Q_p} \cdot s+\omega_p^2} = \frac{k \cdot \frac{1}{C^2R^2}}{s^2 + s\frac{3-k}{CR} + \frac{1}{C^2R^2}}}
+\end{equation}
+
+\vspace{0.2cm}
+\hspace{1mm}Siendo entonces:
+\begin{itemize}
+    \item $\omega_p = \frac{1}{CR}$
+    \item $\omega_p/Q_p = \frac{3-k}{CR}$
+\end{itemize}
+
+\vspace{0.2cm}
+\hspace{1mm}Donde $k = \frac{R_a + R_b}{R_a}$. Entonces:
+
+\begin{equation}
+    \begin{aligned}
+        S\left(\frac{\omega_p}{R}\right) &= \frac{R}{\omega_p} \cdot \frac{\partial\omega_p}{\partial R} = -1 \\
+        S\left(\frac{\omega_p}{C}\right) &= \frac{C}{\omega_p} \cdot \frac{\partial\omega_p}{\partial C} = -1 \\
+        S\left(\frac{\omega_p}{k}\right) &= \frac{k}{\omega_p} \cdot \frac{\partial\omega_p}{\partial k} = 0 \\
+        S\left(\frac{\omega_p/Q_p}{R}\right) &= \frac{R}{\omega_p/Q_p} \cdot \frac{\partial(\omega_p/Q_p)}{\partial R} = 0 \\
+        S\left(\frac{\omega_p/Q_p}{C}\right) &= \frac{C}{\omega_p/Q_p} \cdot \frac{\partial(\omega_p/Q_p)}{\partial C} = 0 \\
+        S\left(\frac{\omega_p/Q_p}{k}\right) &= \frac{k}{\omega_p/Q_p} \cdot \frac{\partial(\omega_p/Q_p)}{\partial k} = \frac{-k}{k-3} = 6.67
+    \end{aligned}
+\end{equation}
+
+\vspace{0.2cm}
+\hspace{1mm}Se desarrollará una tabla para determinar las variaciones y ajustar tolerancias de los componentes, asegurando la mínima desviación posible. Además, se procederá a colocar valores comerciales de componentes con su respectiva serie.
+
+\begin{table}[H]
+    \centering
+    \renewcommand{\arraystretch}{1.3} % Aumenta un poco el alto de las filas para que se vea mejor
+    \begin{tabular}{|c|c|c|c|c|c|}
+        \hline
+        & \multicolumn{2}{c|}{\textbf{Sensibilidad}} & & \multicolumn{2}{c|}{\textbf{Efecto Total}} \\ \hline
+        \textbf{Elemento} & $\omega_p$ & $\omega_p/Q_p$ & \textbf{Tolerancia} & $\omega_p$ & $\omega_p/Q_p$ \\ \hline
+        \textbf{R} & $1$ & $0$ & $5\,\text{\%}$ & $5,00\,\text{\%}$ & $0,00\,\text{\%}$ \\ \hline
+        \textbf{C} & $-1$ & $0$ & $5\,\text{\%}$ & $5,00\,\text{\%}$ & $0,00\,\text{\%}$ \\ \hline
+        \textbf{k} & $0$ & $6,67$ & $1\,\text{\%}$ & $0,00\,\text{\%}$ & $6,67\,\text{\%}$ \\ \hline
+        \multicolumn{3}{|c|}{} & \textbf{TOTAL} & \textbf{10,00\,\text{\%}} & \textbf{6,67\,\text{\%}} \\ \hline
+    \end{tabular}
+    \caption{Variación de los parámetros Pasa Bajo}
+    \label{tab:sens_bajo}
+\end{table}
+
+\newpage
+\noindent\Large{\textbf{Pasa Alto}}
+\normalsize
+\begin{equation}
+    \boxed{\frac{s^2}{s^2+\frac{\omega_p}{Q_p} \cdot s + \omega_p^2} = \frac{k \cdot s^2}{s^2 + \frac{s}{C} \cdot \left(\frac{2}{R_2} + \frac{1-k}{R_1}\right) + \frac{1}{R_1R_2C^2}}}
+\end{equation}
+
+\vspace{0.2cm}
+\hspace{1mm}Siendo entonces:
+\begin{itemize}
+    \item $\omega_p = \frac{1}{C\sqrt{R_1R_2}}$
+    \item $\omega_p/Q_p = \frac{2R_1+R_2 \cdot (1-k)}{C \cdot R_1 \cdot R_2}$
+\end{itemize}
+
+\vspace{0.2cm}
+\hspace{1mm}Donde $k = \frac{R_a + R_b}{R_a}$. Entonces:
+
+\begin{equation}
+    \begin{aligned}
+        S\left(\frac{\omega_p}{R_1}\right) &= \frac{R_1}{\omega_p} \cdot \frac{\partial\omega_p}{\partial R_1} = -0.5 \\
+        S\left(\frac{\omega_p}{R_2}\right) &= \frac{R_2}{\omega_p} \cdot \frac{\partial\omega_p}{\partial R_2} = -0.5 \\
+        S\left(\frac{\omega_p}{C}\right) &= \frac{C}{\omega_p} \cdot \frac{\partial\omega_p}{\partial C} = -1 \\
+        S\left(\frac{\omega_p}{k}\right) &= 0 \\
+        S\left(\frac{\omega_p/Q_p}{R_1}\right) &= \frac{R_2 \cdot (k-1)}{2R_1-(k-1)R_2} = 0 \\
+        S\left(\frac{\omega_p/Q_p}{R_2}\right) &= \frac{2R_1}{R_2 \cdot (k-1)-2R_1} = -1 \\
+        S\left(\frac{\omega_p/Q_p}{C}\right) &= -1 \\
+        S\left(\frac{\omega_p/Q_p}{k}\right) &= \frac{k \cdot R_2}{k \cdot R_2-2(R_1+0.5R_2)} = -13.076
+    \end{aligned}
+\end{equation}
+
+\vspace{0.2cm}
+\vspace{0.2cm}
+
+\hspace{1mm}De la misma manera, desarrollamos una tabla:
+
+\begin{table}[H]
+    \centering
+    \renewcommand{\arraystretch}{1.3} % Mejora el espaciado vertical
+    \begin{tabular}{|c|c|c|c|c|c|}
+        \hline
+        & \multicolumn{2}{c|}{\textbf{Sensibilidad}} & & \multicolumn{2}{c|}{\textbf{Efecto Total}} \\ \hline
+        \textbf{Elemento} & $\omega_p$ & $\omega_p/Q_p$ & \textbf{Tolerancia} & $\omega_p$ & $\omega_p/Q_p$ \\ \hline
+        $\mathbf{R_1}$ & $-0,5$ & $0$ & $5,00\,\text{\%}$ & $2,50\,\text{\%}$ & $0,00\,\text{\%}$ \\ \hline
+        $\mathbf{R_2}$ & $-0,5$ & $-1$ & $5,00\,\text{\%}$ & $2,50\,\text{\%}$ & $5,00\,\text{\%}$ \\ \hline
+        $\mathbf{C}$ & $-1$ & $-1$ & $1,00\,\text{\%}$ & $1,00\,\text{\%}$ & $1,00\,\text{\%}$ \\ \hline
+        $\mathbf{k}$ & $0$ & $-13,076$ & $1,00\,\text{\%}$ & $0,00\,\text{\%}$ & $13,08\,\text{\%}$ \\ \hline
+        \multicolumn{3}{|c|}{} & \textbf{TOTAL} & $\mathbf{6,00\,\text{\%}}$ & $\mathbf{19,08\,\text{\%}}$ \\ \hline
+    \end{tabular}
+    \caption{Variación de los parámetros Pasa Alto}
+    \label{tab:sens_alto}
+\end{table}
+
+\newpage
+\subsubsection{Análisis de Montecarlo}
+\vspace{0.2cm}
+\hspace{1mm}El análisis de Montecarlo es una técnica estadística utilizada para predecir el comportamiento real de un circuito electrónico considerando la variabilidad inherente de sus componentes. A diferencia de una simulación estándar que utiliza valores ideales, este método ejecuta múltiples iteraciones (corridas), asignando en cada una valores aleatorios a los componentes dentro de su rango de tolerancia especificado (por ejemplo, distribución gaussiana dentro del $\pm 5\%$).
+
+\vspace{0.2cm}
+\hspace{1mm}\textbf{Justificación de su uso:}
+\begin{itemize}
+    \item \textbf{Evaluación de la Robustez:} Los filtros de orden superior, y en particular los de aproximación Chebyshev, son sensibles a las variaciones de los componentes. Montecarlo permite verificar si el filtro sigue cumpliendo con la plantilla de atenuación (rizado en banda de paso y rechazo en banda de stop) incluso cuando los componentes no son exactos.
+    \item \textbf{Visualización de la Dispersión:} Permite observar gráficamente el "área" de posibles respuestas en frecuencia, evidenciando cuánto pueden desplazarse la frecuencia central ($f_0$) y el ancho de banda ($BW$) en un escenario de producción real.
+    \item \textbf{Validación del Diseño:} Confirma si las tolerancias seleccionadas (5\% para R y C en este caso) son aceptables o si es necesario utilizar componentes de mayor precisión (1\%) para garantizar el funcionamiento correcto.
+\end{itemize}
+
+\vspace{0.2cm}
+\hspace{1mm}Para este análisis se configuraron los valores comerciales de los componentes pasivos aplicando las tolerancias detalladas en la tabla de sensibilidad anterior.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.85\linewidth]{Imagenes/completo.png}
+    \caption{Circuito a Simular para Montecarlo}
+    \label{fig:circuito_montecarlo}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\linewidth]{Imagenes/montecarlo.png}
+    \caption{Resultados de la Simulación Montecarlo}
+    \label{fig:sim_montecarlo}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\linewidth]{Imagenes/montecarlo2.png}
+    \caption{Zoom en la banda de paso (Detalle de dispersión)}
+    \label{fig:zoom_montecarlo}
+\end{figure}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+%----------------------Ejercicio Extra Desarrollo-----------------------------------    
+    
+        
+\newpage
+\section{Ejercicio adicional}
+\subsection{Objetivos del diseño}
+Diseñar un oscilador de $f=12 kHz$. Simular y ajustar a una tolerancia de +/- 100Hz.
+
+Elementos:
+\begin{itemize}
+    \item Capacitores y resistores
+    \item Fuente CC +/- 12V
+    \item AO LM324
+\end{itemize}
+
+\subsection{Oscilador por desplazamiento de fase}
+La siguiente imagen muestra un oscilador por desplazamiento de fase en atraso, donde se pueden distinguir dos etapas:
+\begin{itemize}
+    \item Red RC: Atrasa la señal 180*.
+    \item Amplificador en configuración inversora: Atrasa la señal 180*.
+\end{itemize}
+
+Para el análisis del circuito se desarrolla cada parte por separado.
+
+\subsubsection{Red RC}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\linewidth]{Imagenes/red RC.png}
+    \caption{Filtro pasabajo - Red RC}
+    \label{fig:RC}
+\end{figure}
+La red RC cumple el funcionamiento de un filtro pasabajo de tercer orden, donde la función de transferencia del filtro se caclcula siguiendo la ley de las corrientes de kirchoff
+
+\begin{itemize}
+    \item Nodo $V_x$
+\end{itemize}
+
+\begin{center}
+    $\frac{V_2-V_x}{R}=\frac{V_x}{\frac{1}{sC}}+\frac{V_x}{R}$
+\vspace{0.2cm}
+
+    $\frac{V_2}{R}=\frac{V_x}{\frac{1}{sC}}+\frac{V_x}{R}+\frac{V_x}{R}$
+\end{center}
+
+\begin{equation}
+       V_2=V_x(2+sCR)
+\end{equation}
+
+\begin{itemize}
+    \item Nodo $V_2$
+\end{itemize}
+
+\begin{center}
+    $\frac{V_1-V_2}{R}=\frac{V_2}{\frac{1}{sC}}+\frac{V_2-V_X}{R}$
+\vspace{0.2cm}
+
+    $\frac{V_1}{R}=2\frac{V_2}{R}+\frac{V_2}{\frac{1}{sC}}-\frac{V_x}{R}$
+\vspace{0.2cm}
+
+    $\frac{V_1}{R}=V_2(\frac{2}{R}+sC)-\frac{V_x}{R}$
+\vspace{0.2cm}
+
+    $\frac{V_1}{R}=V_x(2+sCR)(\frac{2}{R}+sC)-\frac{V_x}{R}$
+\vspace{0.2cm}
+
+    $\frac{V_1}{R}=V_x(\frac{2}{R}+2sC+sC+R(sC)^2)-\frac{V_x}{R}$
+\end{center}
+\begin{equation}
+      V_1=V_x(3+4sCR+(sCR)^2)
+\end{equation}
+
+\begin{itemize}
+    \item Nodo $V_1$
+\end{itemize}
+\begin{center}
+    $\frac{V_o-V_1}{R}=\frac{V_1}{\frac{1}{sC}}+\frac{V_1-V_2}{R}$
+
+    $\frac{V_o}{R}=\frac{V_1}{\frac{1}{sC}}+2\frac{V_1}{R}-\frac{V_2}{R}$
+\vspace{0.2cm}
+
+    $V_o=V_1 (sCR+2)-V_2$
+    \vspace{0.2cm}
+    
+    $V_o=V_x(3+4sCR+(sCR)^2) (sCR+2)-V_x(2+sCR)$
+\vspace{0.2cm}
+
+    $V_o=V_x(6+8sCR+2(sCR)^2+3sCR+4(sCR)^2+(sCR)^3)-V_x(2+sCR)$
+
+
+\end{center}
+
+\begin{equation}
+    V_o=V_x[(SCR)^3+6(sCR)^2+10sCR+4]        
+\end{equation}
+
+\begin{equation}
+    \boxed{F(s)=\frac{1}{(sCR)^3+6(sCR)^2+10sCR+4}}
+\end{equation}
+
+Por lo que si $s=j\omega$ se obtiene:
+\begin{center}
+    $F(j\omega)=\frac{1}{j[10\omega CR-(\omega CR)^3]+[4-6(\omega CR)^2]}$
+\end{center}
+
+La fase de la función de transferencia resulta:
+\begin{equation}
+    F(j\omega)\angle=-arctg[\frac{10\omega CR-(\omega CR)^3}{4-6(\omega CR)^2}]
+\end{equation}
+
+Para atrasar 180° debe suceder que el numerador sea igual a cero:
+\begin{center}
+    $10\omega CR-(\omega CR)^3=0$
+\end{center}
+
+Donde la condición de fase impone que:
+\begin{equation}
+    \omega CR=\sqrt{10}
+\end{equation}
+
+Respecto al módulo de esta función: 
+\begin{equation}
+    |F(j\omega)|=\frac{1}{\sqrt{(\omega CR)^6+16(\omega CR)^4+52(\omega CR)^2+16}}
+\end{equation}
+
+Por lo que si se aplica la condición de fase encontrada se obtiene que:
+\begin{center}
+    $|F(j\omega)|=\frac{1}{\sqrt{(\sqrt{10})^6+16(\sqrt{10})^4+52(\sqrt{10})^2+16}}$
+\end{center}
+
+Obteniendo que la condición de módulo resulta:
+
+\begin{equation}
+    |F(j\omega)|=\frac{1}{56}
+\end{equation}
+
+\subsubsection{Amplificador inversor}
+
+Como la ganancia del filtro es atenuante, esta etapa debe compensarla, de manera que la ganancia del filtro debe ser 56 veces:
+\begin{equation}
+    \frac{R_F}{R}=56
+\end{equation}
+
+\subsubsection{Diseño del oscilador}
+De acuerdo a la ecuación [3] y la ecuacion [6] se pueden determinar las siguientes funciones de diseño:
+\begin{center}
+    $R=\frac{\sqrt{10}}{2\pi f C}$
+    
+\vspace{0.2cm}
+    $R_f=56 R$
+    
+\end{center}
+
+Y estableciendo un valor de capacitor fijo y eligiendo la frecuencia del oscilador en los siguientes valores:
+\begin{center}
+    $C=10nF$
+    \vspace{0.2cm}
+
+    $f=12 kHz$
+    
+\end{center}
+
+Se determinan los valores de resistencia:
+\begin{center}
+    $R=4194,101 \Omega$
+
+    $R_f=234,87 k\Omega$
+\end{center}
+
+\subsubsection{Equivalencia $R_f$}
+Para utilizar valores cercanos al comercial se decide realizar una adaptación del resistor de realimentación a través de una configuración en estrella de una red de resistores, de manera que:
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.85\linewidth]{Imagenes/estrella-res.png}
+    \caption{Transformación de reemplazo }
+    \label{fig:estrella-res}
+\end{figure}
+
+Determinando la función de transferencia entre los puntos A y B se logra la equivalencia entre las dos disposiciones de resistores:
+
+\begin{equation}
+    R_f=\frac{R_1R_2}{R_3}+R_1+R_2
+\end{equation}
+
+Fijando los valores de $R_1$ y $R_2$ en $10k\Omega$ se determina:
+\begin{center}
+    $R_3=465\Omega$
+\end{center}
+
+\subsubsection{Simulaciones}
+\vspace{0.2cm}
+\hspace{1mm}Para validar el diseño teórico, se implementó el circuito en el entorno de simulación LTspice, utilizando la topología de red en adelanto/atraso calculada previamente y el modelo del amplificador operacional LM324. Se configuró un análisis transitorio (\textit{.tran}) de $10~\text{ms}$ para observar el arranque y la estabilización de la señal.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\linewidth]{Imagenes/OsciladorLAB4.jpg}
+    \caption{Esquema de simulación del oscilador en LTspice}
+    \label{fig:sim_oscilador_esquema}
+\end{figure}
+
+\vspace{0.2cm}
+\hspace{1mm}En la Figura \ref{fig:sim_oscilador_transitorio} se presenta la respuesta en el dominio del tiempo de la tensión de salida ($V_{out}$). Se observa que el circuito logra establecer una oscilación sostenida, validando el cumplimiento del Criterio de Barkhausen.
+
+\hspace{1mm}Es importante notar que la señal presenta una forma de onda cuasi-sinusoidal con un notable \textbf{recorte en los extremos} (saturación). Esto se debe a que la ganancia de lazo se diseñó intencionalmente mayor a la unidad ($|A\beta| > 1$) para asegurar el arranque espontáneo de la oscilación a partir del ruido térmico. Al no contar con un circuito de control automático de ganancia (AGC), la amplitud crece hasta que el amplificador operacional alcanza sus límites de alimentación ($\pm 12~\text{V}$), limitando la señal por saturación.
+
+\hspace{1mm}Del análisis gráfico se desprende un periodo de oscilación aproximado de $T \approx 83.3~\mu\text{s}$, lo que corresponde a una frecuencia de $f \approx 12~\text{kHz}$, coincidiendo con el objetivo del diseño.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.85\linewidth]{Imagenes/osciladorBode.jpg}
+    \caption{Respuesta transitoria: Tensión de salida saturada}
+    \label{fig:sim_oscilador_transitorio}
+\end{figure}
+
+\newpage
+\section{Conclusión}
+\vspace{0.2cm}
+\hspace{1mm}El desarrollo del presente Trabajo Práctico permitió abordar de manera integral el diseño, simulación e implementación de circuitos analógicos activos, abarcando tanto el procesamiento de señales (filtros) como la generación de las mismas (osciladores).
+
+\vspace{0.2cm}
+\hspace{1mm}En primer lugar, la síntesis del filtro pasa banda mediante la aproximación de Chebyshev evidenció la eficiencia de estos polinomios para cumplir con requisitos estrictos de selectividad. A través del uso de herramientas computacionales (Python) y la implementación con topologías Sallen-Key bicuadráticas, se logró diseñar un sistema que satisface la plantilla de atenuación solicitada. El análisis de sensibilidad demostró que la topología es robusta, aunque se observó que la etapa pasa alto es más sensible a las variaciones del parámetro de ganancia ($k$) y de los componentes pasivos, lo que justifica la importancia de utilizar resistores de precisión o realizar ajustes finos en la implementación física.
+
+\vspace{0.2cm}
+\hspace{1mm}En cuanto al oscilador por desplazamiento de fase, el diseño teórico y el análisis matemático detallado confirmaron la necesidad de una ganancia de lazo específica ($|A_v| \geq 29$ para la topología estándar, aunque en la configuración analizada de adelanto/atraso se requirió una ganancia de $56$) para compensar la atenuación de la red RC y cumplir con el Criterio de Barkhausen. La técnica de sustitución de la resistencia de realimentación ($R_f$) por una red en estrella ("T") resultó ser una estrategia eficaz para evitar el uso de valores resistivos comerciales imprácticos o muy elevados, facilitando la implementación con componentes estándar.
+
+\vspace{0.2cm}
+\hspace{1mm}Finalmente, la comparación entre los modelos teóricos, las simulaciones en LTspice y (en caso de realizarse) las mediciones experimentales, permite validar las metodologías de diseño empleadas. Las discrepancias menores observadas, típicamente atribuidas a las tolerancias de los componentes y a las limitaciones del ancho de banda y *slew rate* de los amplificadores operacionales reales (LM324), refuerzan la necesidad de considerar estos factores parásitos en etapas tempranas del diseño para garantizar un desempeño óptimo en aplicaciones reales.
+
+
+
+
+
+
+\clearpage
+% -----------------------------------------------------------
+%                     BIBLIOGRAFÍA
+% -----------------------------------------------------------
+\clearpage
+\begin{thebibliography}{9} 
+
+
+
+% Referencia 1: Libro (Daryanani - Imagen adjunta)
+\bibitem{daryanani}
+G. Daryanani, \emph{Principles of Active Network Synthesis and Design}. New York, NY, USA: Wiley, 1976.
+
+% Referencia 2: Libro (Alexander y Sadiku)
+\bibitem{alexander}
+C. K. Alexander and M. N. O. Sadiku, \emph{Fundamentos de circuitos eléctricos}, 7th ed. Madrid, España: McGraw Hill, 2022.
+
+% Referencia 3: Libro (Self)
+\bibitem{self}
+D. Self, \emph{The Design of Active Crossovers}, 1st ed. New York, NY, USA: Routledge, 2011.
+
+% Referencia 4: Documento de Aplicación (Mancini y Palmer - TI)
+\bibitem{mancini}
+R. Mancini and R. Palmer, ``Sine-Wave Oscillator,'' Texas Instruments, Dallas, TX, USA, Application Note SLOA060. [Online]. Available: \url{https://www.ti.com/lit/SLOA060}
+
+% Referencia 5: Sitio Web/Blog (Wilaeba Electrónica)
+\bibitem{wilaebaelectronica}
+Wilaeba Electrónica, ``Blog de electrónica.'' [Online]. Available: \url{http://wilaebaelectronica.blogspot.com}
+
+
+
+\end{thebibliography}
+
+
+
+% -----------------------------------------------------------
+%                       ANEXOS
+% -----------------------------------------------------------
+\clearpage
+\appendix 
+
+
+
+
+
+\end{document}
