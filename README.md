@@ -60,5 +60,10 @@ Diseño e implementación de filtros analógicos.
 ## 🎓 Autores
 
 Alumnos de la cátedra de Síntesis de Redes Activas - FCEFyN, UNC.
+Bazoalto Rocabado, Jacqueline.
+Cabero, Mauro Ezequiel.
+Mora, Ivan Alexander.
+Moran, Mauro Hugo.
+Ruiz, Iván Marcelo.
 
 ---
