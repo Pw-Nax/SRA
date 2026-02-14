@@ -35,6 +35,10 @@ Diseño e implementación de filtros analógicos.
 
 ---
 
+### Extra - Calculadora Oscilador Hartley.
+Permite jugar e interacturar con el calculo de un oscilador en tiempo real, viendo su comportamiento a medida que se modifican sus valores.
+https://colab.research.google.com/drive/18beF1Tnzj-dZyt3Y_3oQHw-_bC_dfina?authuser=1#scrollTo=TDpUBGRPO60a
+
 ## 🛠️ Herramientas Utilizadas
 
 *   **LTspice:** Para la simulación de circuitos, análisis transitorio y de respuesta en frecuencia (AC Analysis).
