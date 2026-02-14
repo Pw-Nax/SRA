@@ -1,0 +1,14 @@
+LTspice 24.1.6 for Windows
+Circuit: E:\Universidad\Pendientes\Materias Aprobadas\SRA\TP4_Filtros\Circuitos\circuitoAdicionalLAB4.net
+Start Time: Sat Feb 14 08:46:59 2026
+solver = Normal
+Maximum thread count: 4
+tnom = 27
+temp = 27
+method = trap
+Direct Newton iteration for .op point succeeded.
+Total elapsed time: 0.795 seconds.
+
+Files loaded:
+E:\Universidad\Pendientes\Materias Aprobadas\SRA\TP4_Filtros\Circuitos\circuitoAdicionalLAB4.net
+
